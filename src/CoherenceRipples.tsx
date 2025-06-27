@@ -826,7 +826,7 @@ const CoherenceRipples = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-6 bg-gray-900 text-white rounded-lg">
+    <div className="w-full max-w-6xl mx-auto p-6 bg-gray-900 text-white rounded-lg border border-gray-700" style={{backgroundColor: '#111827', color: '#ffffff'}}>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-blue-400 mb-2 flex items-center gap-2">
           <Wind className="w-6 h-6" />
@@ -847,28 +847,28 @@ const CoherenceRipples = () => {
           <div className="flex gap-2 mb-4 flex-wrap">
             <button
               onClick={() => setViewMode('ripples')}
-              className={`flex items-center gap-1 px-3 py-1 rounded text-sm ${viewMode === 'ripples' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              className={`flex items-center gap-1 px-3 py-1 rounded text-sm text-white border transition-colors ${viewMode === 'ripples' ? 'bg-blue-600 border-blue-400' : 'bg-gray-700 border-gray-500 hover:bg-gray-600'}`}
             >
               <Waves className="w-4 h-4" />
               Ripples
             </button>
             <button
               onClick={() => setViewMode('oscillators')}
-              className={`flex items-center gap-1 px-3 py-1 rounded text-sm ${viewMode === 'oscillators' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              className={`flex items-center gap-1 px-3 py-1 rounded text-sm text-white border transition-colors ${viewMode === 'oscillators' ? 'bg-blue-600 border-blue-400' : 'bg-gray-700 border-gray-500 hover:bg-gray-600'}`}
             >
               <Heart className="w-4 h-4" />
               Oscillators
             </button>
             <button
               onClick={() => setViewMode('landscape')}
-              className={`flex items-center gap-1 px-3 py-1 rounded text-sm ${viewMode === 'landscape' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              className={`flex items-center gap-1 px-3 py-1 rounded text-sm text-white border transition-colors ${viewMode === 'landscape' ? 'bg-blue-600 border-blue-400' : 'bg-gray-700 border-gray-500 hover:bg-gray-600'}`}
             >
               <Mountain className="w-4 h-4" />
               Energy Landscape
             </button>
             <button
               onClick={() => setViewMode('ecosystem')}
-              className={`flex items-center gap-1 px-3 py-1 rounded text-sm ${viewMode === 'ecosystem' ? 'bg-blue-600' : 'bg-gray-600'}`}
+              className={`flex items-center gap-1 px-3 py-1 rounded text-sm text-white border transition-colors ${viewMode === 'ecosystem' ? 'bg-blue-600 border-blue-400' : 'bg-gray-700 border-gray-500 hover:bg-gray-600'}`}
             >
               <TreePine className="w-4 h-4" />
               Ecosystem
@@ -885,7 +885,7 @@ const CoherenceRipples = () => {
           <div className="flex gap-3 mt-4 flex-wrap">
             <button
               onClick={toggleSimulation}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white border border-blue-400 rounded-lg transition-colors"
             >
               {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               {isRunning ? 'Pause' : 'Start'}
@@ -893,7 +893,7 @@ const CoherenceRipples = () => {
             
             <button
               onClick={reset}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white border border-gray-500 rounded-lg transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               Reset
@@ -902,11 +902,11 @@ const CoherenceRipples = () => {
           
           {/* Scenario Buttons */}
           <div className="mt-4">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">Scenarios:</h4>
+            <h4 className="text-sm font-semibold text-white mb-2">Scenarios:</h4>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => runScenario('social_stress')}
-                className="flex items-center gap-1 px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors text-sm"
+                className="flex items-center gap-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white border border-red-400 rounded-lg transition-colors text-sm"
               >
                 <MessageCircle className="w-4 h-4" />
                 Social Conflict
@@ -914,7 +914,7 @@ const CoherenceRipples = () => {
               
               <button
                 onClick={() => runScenario('panic_attack')}
-                className="flex items-center gap-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg transition-colors text-sm"
+                className="flex items-center gap-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white border border-orange-400 rounded-lg transition-colors text-sm"
               >
                 <Zap className="w-4 h-4" />
                 Panic Attack
@@ -922,7 +922,7 @@ const CoherenceRipples = () => {
               
               <button
                 onClick={() => runScenario('meditation')}
-                className="flex items-center gap-1 px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-sm"
+                className="flex items-center gap-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white border border-green-400 rounded-lg transition-colors text-sm"
               >
                 <Wind className="w-4 h-4" />
                 Meditation
@@ -930,7 +930,7 @@ const CoherenceRipples = () => {
               
               <button
                 onClick={() => runScenario('deep_connection')}
-                className="flex items-center gap-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors text-sm"
+                className="flex items-center gap-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white border border-teal-400 rounded-lg transition-colors text-sm"
               >
                 <Heart className="w-4 h-4" />
                 Deep Connection
@@ -941,11 +941,11 @@ const CoherenceRipples = () => {
 
         <div className="space-y-4">
           {/* System Parameters */}
-          <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold mb-3 text-blue-300">System Parameters</h3>
+          <div className="bg-gray-800 border border-gray-600 p-4 rounded-lg">
+            <h3 className="text-lg font-semibold mb-3 text-white">System Parameters</h3>
             
             <div className="mb-3">
-              <label className="block text-sm text-gray-300 mb-1">
+              <label className="block text-sm text-white mb-1">
                 Breath Coherence: {params.breathCoherence.toFixed(2)}
               </label>
               <input
@@ -963,7 +963,7 @@ const CoherenceRipples = () => {
             </div>
 
             <div className="mb-3">
-              <label className="block text-sm text-gray-300 mb-1">
+              <label className="block text-sm text-white mb-1">
                 Metacognition: {params.metacognition.toFixed(2)}
               </label>
               <input
@@ -981,7 +981,7 @@ const CoherenceRipples = () => {
             </div>
 
             <div className="mb-3">
-              <label className="block text-sm text-gray-300 mb-1">
+              <label className="block text-sm text-white mb-1">
                 Stress Level: {params.stressLevel.toFixed(2)}
               </label>
               <input
@@ -999,7 +999,7 @@ const CoherenceRipples = () => {
             </div>
 
             <div className="mb-3">
-              <label className="block text-sm text-gray-300 mb-1">
+              <label className="block text-sm text-white mb-1">
                 Social Support: {params.socialSupport.toFixed(2)}
               </label>
               <input
