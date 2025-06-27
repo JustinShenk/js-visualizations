@@ -489,9 +489,14 @@ const CoherenceRipples = () => {
     const centerX = width / 2;
     const centerY = height / 2;
     
-    // Create 3D-like energy landscape
-    const resolution = 30;
-    const maxRadius = 200;
+    // Calculate overall system coherence
+    const avgCoherence = Object.values(smoothCoherence).reduce((sum, val) => sum + val, 0) / 6;
+    const stressLevel = params.stressLevel;
+    const breathCoherence = smoothCoherence.breath;
+    
+    // Create smoother energy landscape based on coherence state
+    const resolution = 40;
+    const maxRadius = 250;
     
     for (let i = 0; i < resolution; i++) {
       for (let j = 0; j < resolution; j++) {
@@ -500,46 +505,101 @@ const CoherenceRipples = () => {
         const r = Math.sqrt(x*x + y*y);
         
         if (r < maxRadius) {
-          // Calculate energy potential at this point
-          let potential = 0;
-          const rings = [40, 80, 120, 160, 200, 240];
-          const coherences = [smoothCoherence.breath, smoothCoherence.hrv, smoothCoherence.emotional, 
-                            smoothCoherence.cognitive, smoothCoherence.behavioral, smoothCoherence.social];
+          // Base potential creates central valley when coherent
+          let potential = r * r / 500; // Basic upward slope from center
           
-          rings.forEach((radius, index) => {
-            const distance = Math.abs(r - radius);
-            const depth = coherences[index];
-            const wellDepth = depth * 50 * Math.exp(-distance * distance / (1000 * depth));
-            potential -= wellDepth; // Negative = energy well
-          });
+          // Coherence creates smooth central valley
+          const coherenceWell = -avgCoherence * 80 * Math.exp(-r*r / (5000 * avgCoherence + 1000));
+          potential += coherenceWell;
           
-          // Add stress as hills
-          potential += params.stressLevel * 30 * Math.exp(-r*r / 10000);
+          // Stress creates chaotic hills and roughness
+          if (stressLevel > 0.1) {
+            const chaos = stressLevel * 30 * (
+              Math.sin(x * 0.1) * Math.cos(y * 0.1) +
+              Math.sin(x * 0.05) * Math.sin(y * 0.08) * 0.5 +
+              Math.random() * stressLevel * 10
+            );
+            potential += chaos;
+          }
           
-          // Draw landscape point
+          // Meditation smooths everything
+          const meditation = params.intervention;
+          if (meditation > 0.1) {
+            potential *= (1 - meditation * 0.7); // Smooth out terrain
+          }
+          
+          // Draw landscape point with height-based color
           const screenX = centerX + x;
-          const screenY = centerY + y + potential * 0.5; // Pseudo-3D effect
+          const screenY = centerY + y + potential * 0.3; // Pseudo-3D effect
           
-          const hue = potential < 0 ? 240 : 0; // Blue for wells, red for hills
-          const saturation = Math.min(100, Math.abs(potential) * 2);
-          const lightness = 50 + potential;
+          let hue, saturation, lightness;
+          if (potential < -20) {
+            // Deep valley (coherent state) - blue
+            hue = 240;
+            saturation = 70;
+            lightness = 30 + Math.max(0, -potential) * 0.5;
+          } else if (potential > 20) {
+            // High hills (chaotic state) - red
+            hue = 0;
+            saturation = 80;
+            lightness = 40 + Math.min(30, potential * 0.3);
+          } else {
+            // Neutral ground - green
+            hue = 120;
+            saturation = 40;
+            lightness = 45;
+          }
           
           ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-          ctx.fillRect(screenX - 2, screenY - 2, 4, 4);
+          ctx.fillRect(screenX - 3, screenY - 3, 6, 6);
         }
       }
     }
     
-    // Draw current system state as a ball
-    const avgCoherence = Object.values(smoothCoherence).reduce((sum, val) => sum + val, 0) / 6;
-    const ballRadius = 150 * avgCoherence + 50;
-    const ballX = centerX + Math.cos(time * 0.5) * ballRadius;
-    const ballY = centerY + Math.sin(time * 0.5) * ballRadius;
+    // Draw ball that follows terrain physics
+    // Calculate ball position based on terrain (rolling towards lower energy)
+    const ballCenterR = avgCoherence > 0.6 ? 30 + avgCoherence * 20 : 80 + stressLevel * 100;
     
-    ctx.fillStyle = '#ffffff';
+    let ballX, ballY;
+    if (avgCoherence > 0.5) {
+      // High coherence: ball settles in center valley
+      ballX = centerX + Math.cos(time * 0.1) * ballCenterR * 0.3;
+      ballY = centerY + Math.sin(time * 0.1) * ballCenterR * 0.3;
+    } else {
+      // Low coherence: ball bounces chaotically on hills
+      const chaoticMotion = stressLevel * 2;
+      ballX = centerX + Math.cos(time * 0.3) * ballCenterR + 
+              Math.sin(time * 0.8) * chaoticMotion * 50;
+      ballY = centerY + Math.sin(time * 0.4) * ballCenterR + 
+              Math.cos(time * 0.9) * chaoticMotion * 50;
+    }
+    
+    // Ball size reflects stability
+    const ballSize = avgCoherence > 0.5 ? 12 : 8;
+    
+    // Ball color reflects current state
+    const ballHue = avgCoherence > 0.5 ? 120 : (stressLevel > 0.5 ? 0 : 60);
+    ctx.fillStyle = `hsl(${ballHue}, 80%, 70%)`;
     ctx.beginPath();
-    ctx.arc(ballX, ballY, 8, 0, 2 * Math.PI);
+    ctx.arc(ballX, ballY, ballSize, 0, 2 * Math.PI);
     ctx.fill();
+    
+    // Ball trail when chaotic
+    if (avgCoherence < 0.4) {
+      ctx.strokeStyle = `hsla(${ballHue}, 60%, 50%, 0.3)`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let t = 0; t < 10; t++) {
+        const trailTime = time - t * 5;
+        const trailX = centerX + Math.cos(trailTime * 0.3) * ballCenterR + 
+                      Math.sin(trailTime * 0.8) * stressLevel * 2 * 50;
+        const trailY = centerY + Math.sin(trailTime * 0.4) * ballCenterR + 
+                      Math.cos(trailTime * 0.9) * stressLevel * 2 * 50;
+        if (t === 0) ctx.moveTo(trailX, trailY);
+        else ctx.lineTo(trailX, trailY);
+      }
+      ctx.stroke();
+    }
     
     // Draw energy level indicator
     ctx.fillStyle = '#ffffff';
