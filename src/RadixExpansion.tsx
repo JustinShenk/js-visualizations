@@ -329,7 +329,7 @@ export default function RadixExpansion() {
   }
 
   return (
-    <div className="w-full bg-black text-white p-4">
+    <div className="w-full bg-black text-white p-4" style={{minWidth: '800px'}}>
       <div className="mb-4">
         <h2 className="text-xl mb-2">Meditative States & Information Processing Capacity</h2>
         <p className="text-sm text-gray-300 mb-4">
@@ -361,7 +361,7 @@ export default function RadixExpansion() {
       <canvas
         ref={canvasRef}
         className="w-full h-96 border border-gray-600"
-        style={{ background: '#000000' }}
+        style={{ background: '#000000', minWidth: '750px' }}
       />
       
       <div className="mt-4 text-xs text-gray-400">
