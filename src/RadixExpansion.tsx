@@ -241,8 +241,8 @@ export default function RadixExpansion() {
 
   const drawTherapeuticInsights = (ctx: CanvasRenderingContext2D, width: number, height: number, currentJhana: number) => {
     const insightX = width * 0.5
-    const insightY = height * 0.65
-    const lineHeight = 20
+    const insightY = height * 0.7
+    const lineHeight = 22
 
     // Title
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
@@ -254,11 +254,11 @@ export default function RadixExpansion() {
     
     ctx.fillStyle = 'rgba(100, 255, 150, 0.9)'
     ctx.font = 'bold 13px Arial'
-    ctx.fillText(`Current Capacity: ${currentExample.example}`, insightX, insightY + 30)
+    ctx.fillText(`Current Capacity: ${currentExample.example}`, insightX, insightY + 35)
     
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
     ctx.font = '11px Arial'
-    ctx.fillText(currentExample.detail, insightX, insightY + 50)
+    ctx.fillText(currentExample.detail, insightX, insightY + 55)
 
     // Clinical benefits
     const benefits = [
@@ -275,22 +275,22 @@ export default function RadixExpansion() {
     benefits.slice(0, Math.min(6, currentJhana + 2)).forEach((benefit, index) => {
       const alpha = index <= currentJhana ? 0.9 : 0.4
       ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`
-      ctx.fillText(benefit, insightX, insightY + 80 + index * lineHeight)
+      ctx.fillText(benefit, insightX, insightY + 85 + index * lineHeight)
     })
 
     // Information processing note
     ctx.fillStyle = 'rgba(200, 200, 255, 0.6)'
     ctx.font = 'italic 10px Arial'
-    ctx.fillText('Each state represents exponentially increased', insightX, insightY + 220)
-    ctx.fillText('information processing and integration capacity', insightX, insightY + 235)
+    ctx.fillText('Each state represents exponentially increased', insightX, insightY + 240)
+    ctx.fillText('information processing and integration capacity', insightX, insightY + 255)
   }
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    canvas.width = canvas.offsetWidth
-    canvas.height = canvas.offsetHeight
+    canvas.width = Math.max(750, canvas.offsetWidth)
+    canvas.height = 500 // Fixed height to prevent shrinking
 
     const animate = () => {
       draw()
