@@ -241,8 +241,8 @@ export default function RadixExpansion() {
 
   const drawTherapeuticInsights = (ctx: CanvasRenderingContext2D, width: number, height: number, currentJhana: number) => {
     const insightX = width * 0.5
-    const insightY = height * 0.6
-    const lineHeight = 18
+    const insightY = height * 0.65
+    const lineHeight = 20
 
     // Title
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
@@ -254,11 +254,11 @@ export default function RadixExpansion() {
     
     ctx.fillStyle = 'rgba(100, 255, 150, 0.9)'
     ctx.font = 'bold 13px Arial'
-    ctx.fillText(`Current Capacity: ${currentExample.example}`, insightX, insightY + 25)
+    ctx.fillText(`Current Capacity: ${currentExample.example}`, insightX, insightY + 30)
     
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
     ctx.font = '11px Arial'
-    ctx.fillText(currentExample.detail, insightX, insightY + 40)
+    ctx.fillText(currentExample.detail, insightX, insightY + 50)
 
     // Clinical benefits
     const benefits = [
@@ -275,14 +275,14 @@ export default function RadixExpansion() {
     benefits.slice(0, Math.min(6, currentJhana + 2)).forEach((benefit, index) => {
       const alpha = index <= currentJhana ? 0.9 : 0.4
       ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`
-      ctx.fillText(benefit, insightX, insightY + 65 + index * lineHeight)
+      ctx.fillText(benefit, insightX, insightY + 80 + index * lineHeight)
     })
 
     // Information processing note
     ctx.fillStyle = 'rgba(200, 200, 255, 0.6)'
     ctx.font = 'italic 10px Arial'
-    ctx.fillText('Each state represents exponentially increased', insightX, insightY + 200)
-    ctx.fillText('information processing and integration capacity', insightX, insightY + 215)
+    ctx.fillText('Each state represents exponentially increased', insightX, insightY + 220)
+    ctx.fillText('information processing and integration capacity', insightX, insightY + 235)
   }
 
   useEffect(() => {
@@ -360,8 +360,8 @@ export default function RadixExpansion() {
       
       <canvas
         ref={canvasRef}
-        className="w-full h-96 border border-gray-600"
-        style={{ background: '#000000', minWidth: '750px' }}
+        className="w-full border border-gray-600"
+        style={{ background: '#000000', minWidth: '750px', height: '500px' }}
       />
       
       <div className="mt-4 text-xs text-gray-400">

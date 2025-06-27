@@ -418,6 +418,17 @@ const CoherenceRipples = () => {
       ctx.stroke();
     }
     
+    // Draw horizontal reference line (always visible)
+    const baselineY = centerY + 60;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(oscillators[0].x - 50, baselineY);
+    ctx.lineTo(oscillators[oscillators.length - 1].x + 50, baselineY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
     // Draw oscillators as pendulums
     oscillators.forEach(osc => {
       const coherence = smoothCoherence[osc.name];
