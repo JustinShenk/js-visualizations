@@ -380,12 +380,12 @@ const CoherenceRipples = () => {
     const centerY = height / 2;
     
     const oscillators = [
-      { name: 'breath', x: centerX - 200, y: centerY, color: '#3b82f6', label: 'Breath' },
-      { name: 'hrv', x: centerX - 120, y: centerY, color: '#ef4444', label: 'HRV' },
-      { name: 'emotional', x: centerX - 40, y: centerY, color: '#f59e0b', label: 'Emotional' },
-      { name: 'cognitive', x: centerX + 40, y: centerY, color: '#8b5cf6', label: 'Cognitive' },
-      { name: 'behavioral', x: centerX + 120, y: centerY, color: '#06b6d4', label: 'Behavioral' },
-      { name: 'social', x: centerX + 200, y: centerY, color: '#10b981', label: 'Social' }
+      { name: 'breath', x: centerX - 200, y: centerY, color: 'rgb(59, 130, 246)', label: 'Breath' },
+      { name: 'hrv', x: centerX - 120, y: centerY, color: 'rgb(239, 68, 68)', label: 'HRV' },
+      { name: 'emotional', x: centerX - 40, y: centerY, color: 'rgb(245, 158, 11)', label: 'Emotional' },
+      { name: 'cognitive', x: centerX + 40, y: centerY, color: 'rgb(139, 92, 246)', label: 'Cognitive' },
+      { name: 'behavioral', x: centerX + 120, y: centerY, color: 'rgb(6, 182, 212)', label: 'Behavioral' },
+      { name: 'social', x: centerX + 200, y: centerY, color: 'rgb(16, 185, 129)', label: 'Social' }
     ];
     
     // Draw coupling springs between oscillators
@@ -465,6 +465,36 @@ const CoherenceRipples = () => {
       ctx.arc(bobX, bobY, bobRadius, 0, 2 * Math.PI);
       ctx.fill();
       
+      // Add visual stress/scenario indicators
+      if (activeScenario === 'social_stress' && (osc.name === 'social' || osc.name === 'behavioral')) {
+        ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(bobX, bobY, bobRadius + 5, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      if (activeScenario === 'panic_attack' && (osc.name === 'emotional' || osc.name === 'hrv')) {
+        ctx.strokeStyle = 'rgba(255, 165, 0, 0.8)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(bobX, bobY, bobRadius + 5, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      if (activeScenario === 'meditation' && (osc.name === 'breath' || osc.name === 'hrv')) {
+        ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(bobX, bobY, bobRadius + 5, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      if (activeScenario === 'deep_connection' && (osc.name === 'social' || osc.name === 'emotional')) {
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.8)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(bobX, bobY, bobRadius + 5, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+      
       // Draw motion trail
       const trailLength = 20;
       for (let i = 1; i <= trailLength; i++) {
@@ -494,7 +524,7 @@ const CoherenceRipples = () => {
     });
     
     ctx.globalAlpha = 1;
-  }, [smoothCoherence, oscillatorPhases]);
+  }, [smoothCoherence, oscillatorPhases, activeScenario]);
 
   const drawLandscapeView = useCallback((ctx, width, height) => {
     const centerX = width / 2;
@@ -503,122 +533,162 @@ const CoherenceRipples = () => {
     // Calculate overall system coherence
     const avgCoherence = Object.values(smoothCoherence).reduce((sum, val) => sum + val, 0) / 6;
     const stressLevel = params.stressLevel;
-    const breathCoherence = smoothCoherence.breath;
     
-    // Create smoother energy landscape based on coherence state
-    const resolution = 40;
-    const maxRadius = 250;
+    // Draw 2D contour map with multiple basins
+    const resolution = 50;
+    const gridSize = 400;
     
+    // Define attractor basins (different states)
+    const basins = [
+      // Coherent state (main attractor when healthy)
+      { x: 0, y: 0, depth: avgCoherence * 50, radius: 100, label: 'Coherent Flow' },
+      // Stress attractor
+      { x: -150, y: -100, depth: stressLevel * 40, radius: 80, label: 'Stress Pattern' },
+      // Dissociation attractor
+      { x: 150, y: -120, depth: (1 - avgCoherence) * 30, radius: 70, label: 'Dissociation' },
+      // Depression attractor
+      { x: -120, y: 130, depth: (stressLevel + (1 - avgCoherence)) * 20, radius: 90, label: 'Low Energy' },
+      // Agitation attractor
+      { x: 140, y: 100, depth: (stressLevel * (1 - params.metacognition)) * 35, radius: 75, label: 'Agitation' }
+    ];
+    
+    // Create energy landscape
     for (let i = 0; i < resolution; i++) {
       for (let j = 0; j < resolution; j++) {
-        const x = (i - resolution/2) * maxRadius / resolution;
-        const y = (j - resolution/2) * maxRadius / resolution;
-        const r = Math.sqrt(x*x + y*y);
+        const x = (i / resolution - 0.5) * gridSize;
+        const y = (j / resolution - 0.5) * gridSize;
         
-        if (r < maxRadius) {
-          // Base potential creates central valley when coherent
-          let potential = r * r / 500; // Basic upward slope from center
+        // Calculate energy at this point based on all basins
+        let energy = 20; // Base energy level
+        
+        basins.forEach(basin => {
+          const dx = x - basin.x;
+          const dy = y - basin.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
           
-          // Coherence creates smooth central valley
-          const coherenceWell = -avgCoherence * 80 * Math.exp(-r*r / (5000 * avgCoherence + 1000));
-          potential += coherenceWell;
-          
-          // Stress creates chaotic hills and roughness
-          if (stressLevel > 0.1) {
-            const chaos = stressLevel * 30 * (
-              Math.sin(x * 0.1) * Math.cos(y * 0.1) +
-              Math.sin(x * 0.05) * Math.sin(y * 0.08) * 0.5 +
-              Math.random() * stressLevel * 10
-            );
-            potential += chaos;
+          // Each basin creates a depression in the energy landscape
+          if (dist < basin.radius * 2) {
+            const influence = Math.exp(-dist * dist / (basin.radius * basin.radius));
+            energy -= basin.depth * influence;
           }
-          
-          // Meditation smooths everything
-          const meditation = params.intervention;
-          if (meditation > 0.1) {
-            potential *= (1 - meditation * 0.7); // Smooth out terrain
-          }
-          
-          // Draw landscape point with height-based color
-          const screenX = centerX + x;
-          const screenY = centerY + y + potential * 0.3; // Pseudo-3D effect
-          
-          let hue, saturation, lightness;
-          if (potential < -20) {
-            // Deep valley (coherent state) - blue
-            hue = 240;
-            saturation = 70;
-            lightness = 30 + Math.max(0, -potential) * 0.5;
-          } else if (potential > 20) {
-            // High hills (chaotic state) - red
-            hue = 0;
-            saturation = 80;
-            lightness = 40 + Math.min(30, potential * 0.3);
-          } else {
-            // Neutral ground - green
-            hue = 120;
-            saturation = 40;
-            lightness = 45;
-          }
-          
-          ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-          ctx.fillRect(screenX - 3, screenY - 3, 6, 6);
+        });
+        
+        // Add some terrain variation
+        energy += Math.sin(x * 0.02) * Math.cos(y * 0.02) * 5;
+        
+        // Draw contour lines
+        const screenX = centerX + x;
+        const screenY = centerY + y;
+        
+        // Color based on energy level (contour mapping)
+        const normalizedEnergy = (energy + 50) / 100; // Normalize to 0-1
+        const contourLevel = Math.floor(normalizedEnergy * 10) / 10;
+        
+        // Create discrete contour bands
+        let hue, saturation, lightness;
+        if (energy < -30) {
+          // Very deep (strong attractor)
+          hue = 240;
+          saturation = 80;
+          lightness = 20 + contourLevel * 10;
+        } else if (energy < -10) {
+          // Moderate depth
+          hue = 200;
+          saturation = 60;
+          lightness = 30 + contourLevel * 15;
+        } else if (energy < 10) {
+          // Shallow
+          hue = 160;
+          saturation = 40;
+          lightness = 40 + contourLevel * 10;
+        } else {
+          // High energy (barriers)
+          hue = 30;
+          saturation = 50;
+          lightness = 50 + contourLevel * 10;
+        }
+        
+        // Draw as small rectangles to create smooth contours
+        const cellSize = gridSize / resolution;
+        ctx.fillStyle = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        ctx.fillRect(screenX - cellSize/2, screenY - cellSize/2, cellSize, cellSize);
+        
+        // Draw contour lines at specific energy levels
+        if (Math.abs(energy % 10) < 1) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(screenX - cellSize/2, screenY - cellSize/2, cellSize, cellSize);
         }
       }
     }
     
-    // Draw ball that follows terrain physics
-    // Calculate ball position based on terrain (rolling towards lower energy)
-    const ballCenterR = avgCoherence > 0.6 ? 30 + avgCoherence * 20 : 80 + stressLevel * 100;
+    // Draw basin labels
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'center';
+    basins.forEach(basin => {
+      if (basin.depth > 10) { // Only label significant basins
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fillText(basin.label, centerX + basin.x, centerY + basin.y - basin.radius - 10);
+      }
+    });
     
-    let ballX, ballY;
-    if (avgCoherence > 0.5) {
-      // High coherence: ball settles in center valley
-      ballX = centerX + Math.cos(time * 0.1) * ballCenterR * 0.3;
-      ballY = centerY + Math.sin(time * 0.1) * ballCenterR * 0.3;
-    } else {
-      // Low coherence: ball bounces chaotically on hills
-      const chaoticMotion = stressLevel * 2;
-      ballX = centerX + Math.cos(time * 0.3) * ballCenterR + 
-              Math.sin(time * 0.8) * chaoticMotion * 50;
-      ballY = centerY + Math.sin(time * 0.4) * ballCenterR + 
-              Math.cos(time * 0.9) * chaoticMotion * 50;
-    }
+    // Draw system state ball
+    let targetBasin = basins[0]; // Default to coherent state
+    let maxAttraction = 0;
     
-    // Ball size reflects stability
-    const ballSize = avgCoherence > 0.5 ? 12 : 8;
+    // Find which basin has strongest pull
+    basins.forEach((basin, index) => {
+      const attraction = basin.depth;
+      if (attraction > maxAttraction && index !== 0) {
+        maxAttraction = attraction;
+        targetBasin = basin;
+      }
+    });
     
-    // Ball color reflects current state
-    const ballHue = avgCoherence > 0.5 ? 120 : (stressLevel > 0.5 ? 0 : 60);
-    ctx.fillStyle = `hsl(${ballHue}, 80%, 70%)`;
+    // Ball position moves towards strongest attractor
+    const ballTargetX = centerX + targetBasin.x * (targetBasin.depth / 50);
+    const ballTargetY = centerY + targetBasin.y * (targetBasin.depth / 50);
+    
+    // Add some movement dynamics
+    const ballX = ballTargetX + Math.cos(time * 0.5) * 10 * (1 - avgCoherence);
+    const ballY = ballTargetY + Math.sin(time * 0.5) * 10 * (1 - avgCoherence);
+    
+    // Draw ball with glow effect
+    const gradient = ctx.createRadialGradient(ballX, ballY, 0, ballX, ballY, 15);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+    gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.6)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.2)');
+    
+    ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(ballX, ballY, ballSize, 0, 2 * Math.PI);
+    ctx.arc(ballX, ballY, 8, 0, 2 * Math.PI);
     ctx.fill();
     
-    // Ball trail when chaotic
-    if (avgCoherence < 0.4) {
-      ctx.strokeStyle = `hsla(${ballHue}, 60%, 50%, 0.3)`;
-      ctx.lineWidth = 2;
+    // Draw ball core
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 5, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Draw trajectory prediction
+    if (avgCoherence < 0.7) {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 5]);
       ctx.beginPath();
-      for (let t = 0; t < 10; t++) {
-        const trailTime = time - t * 5;
-        const trailX = centerX + Math.cos(trailTime * 0.3) * ballCenterR + 
-                      Math.sin(trailTime * 0.8) * stressLevel * 2 * 50;
-        const trailY = centerY + Math.sin(trailTime * 0.4) * ballCenterR + 
-                      Math.cos(trailTime * 0.9) * stressLevel * 2 * 50;
-        if (t === 0) ctx.moveTo(trailX, trailY);
-        else ctx.lineTo(trailX, trailY);
-      }
+      ctx.moveTo(ballX, ballY);
+      ctx.lineTo(ballTargetX, ballTargetY);
       ctx.stroke();
+      ctx.setLineDash([]);
     }
     
-    // Draw energy level indicator
+    // Draw title and legend
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Energy Landscape View', centerX, 30);
+    ctx.fillText('Attractor Landscape', centerX, 30);
     ctx.font = '12px sans-serif';
-    ctx.fillText('Blue = stable states, Red = unstable, White dot = current state', centerX, 50);
+    ctx.fillText('Multiple basins compete for system state - depth shows current pull strength', centerX, 50);
     
   }, [smoothCoherence, params, time]);
 
