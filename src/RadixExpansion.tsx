@@ -107,8 +107,8 @@ export default function RadixExpansion() {
 
   const drawMeditationPractice = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     const centerX = width * 0.2
-    const centerY = height * 0.3
-    const radius = 40
+    const centerY = height * 0.25
+    const radius = 35
 
     // Draw meditator with breathing animation
     const breathPhase = Math.sin(Date.now() * 0.002) * 0.15
@@ -143,13 +143,13 @@ export default function RadixExpansion() {
     // Meditation depth indicator
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
     ctx.font = '12px Arial'
-    ctx.fillText(`Depth: ${Math.round(meditationLevel * 100)}%`, centerX - 40, centerY + radius + 90)
+    ctx.fillText(`Depth: ${Math.round(meditationLevel * 100)}%`, centerX - 40, centerY + radius + 85)
   }
 
   const drawJhanaProgression = (ctx: CanvasRenderingContext2D, width: number, height: number, currentJhana: number) => {
     const startX = width * 0.45
-    const startY = height * 0.15
-    const stateHeight = 35
+    const startY = height * 0.12
+    const stateHeight = 30
     const stateWidth = width * 0.25
 
     // Title
@@ -158,7 +158,7 @@ export default function RadixExpansion() {
     ctx.fillText('Meditative States & Processing Capacity', startX, startY - 10)
 
     jhanaStates.forEach((state, index) => {
-      const y = startY + 25 + index * (stateHeight + 5)
+      const y = startY + 25 + index * (stateHeight + 3)
       const isActive = index <= currentJhana
       const alpha = isActive ? 1 : 0.3
 
@@ -191,8 +191,8 @@ export default function RadixExpansion() {
 
   const drawCompressionCapacity = (ctx: CanvasRenderingContext2D, width: number, height: number, compression: number) => {
     const imageX = width * 0.05
-    const imageY = height * 0.6
-    const imageSize = 120
+    const imageY = height * 0.52
+    const imageSize = 100
 
     // Title
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
@@ -232,17 +232,12 @@ export default function RadixExpansion() {
     ctx.font = '12px Arial'
     ctx.fillText(`${numPixels}×${numPixels} resolution`, imageX, imageY + imageSize + 20)
     ctx.fillText(`${compression}x compression capacity`, imageX, imageY + imageSize + 35)
-
-    // Explanation
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
-    ctx.font = '10px Arial'
-    ctx.fillText('Higher meditation states = finer information granularity', imageX, imageY + imageSize + 55)
   }
 
   const drawTherapeuticInsights = (ctx: CanvasRenderingContext2D, width: number, height: number, currentJhana: number) => {
     const insightX = width * 0.5
-    const insightY = height * 0.7
-    const lineHeight = 22
+    const insightY = height * 0.58
+    const lineHeight = 19
 
     // Title
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
@@ -275,14 +270,8 @@ export default function RadixExpansion() {
     benefits.slice(0, Math.min(6, currentJhana + 2)).forEach((benefit, index) => {
       const alpha = index <= currentJhana ? 0.9 : 0.4
       ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`
-      ctx.fillText(benefit, insightX, insightY + 85 + index * lineHeight)
+      ctx.fillText(benefit, insightX, insightY + 80 + index * lineHeight)
     })
-
-    // Information processing note
-    ctx.fillStyle = 'rgba(200, 200, 255, 0.6)'
-    ctx.font = 'italic 10px Arial'
-    ctx.fillText('Each state represents exponentially increased', insightX, insightY + 240)
-    ctx.fillText('information processing and integration capacity', insightX, insightY + 255)
   }
 
   useEffect(() => {
