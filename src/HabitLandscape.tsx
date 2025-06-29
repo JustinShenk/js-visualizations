@@ -712,12 +712,12 @@ const HabitLandscape = () => {
 
         <div className="space-y-4">
           <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="text-lg font-bold mb-3 text-white">System Parameters</h3>
+            <h3 className="text-lg font-semibold mb-3 text-blue-300">System Parameters</h3>
             
             {Object.entries(params).map(([key, value]) => (
               <div key={key} className="mb-3">
-                <label className="block text-sm text-white mb-1 font-medium">
-                  {key.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}: {value.toFixed(2)}
+                <label className="block text-sm text-gray-300 mb-1 capitalize">
+                  {key.replace(/([A-Z])/g, ' $1').trim()}: {value.toFixed(2)}
                 </label>
                 <input
                   type="range"
@@ -729,26 +729,26 @@ const HabitLandscape = () => {
                     ...prev,
                     [key]: parseFloat(e.target.value)
                   }))}
-                  className="w-full h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                 />
               </div>
             ))}
           </div>
 
           <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="text-lg font-bold mb-2 text-white">Current State</h3>
-            <div className="text-sm space-y-1 text-gray-200">
-              <div><span className="font-medium">Position:</span> ({behaviorState.x.toFixed(2)}, {behaviorState.y.toFixed(2)})</div>
-              <div><span className="font-medium">Energy:</span> {behaviorState.energy.toFixed(2)}</div>
-              <div><span className="font-medium">Mood:</span> {(smoothedMood * 100).toFixed(0)}%</div>
-              <div><span className="font-medium">Mental Load:</span> {(smoothedCogLoad * 100).toFixed(0)}%</div>
-              <div><span className="font-medium">Current Habit:</span> {behaviorState.currentHabit?.name || 'None'}</div>
-              <div><span className="font-medium">Time:</span> {Math.floor(behaviorState.timeOfDay)}:{Math.floor((behaviorState.timeOfDay % 1) * 60).toString().padStart(2, '0')}</div>
+            <h3 className="text-lg font-semibold mb-2 text-green-300">Current State</h3>
+            <div className="text-sm space-y-1">
+              <div>Position: ({behaviorState.x.toFixed(2)}, {behaviorState.y.toFixed(2)})</div>
+              <div>Energy: {behaviorState.energy.toFixed(2)}</div>
+              <div>Mood: {(smoothedMood * 100).toFixed(0)}%</div>
+              <div>Mental Load: {(smoothedCogLoad * 100).toFixed(0)}%</div>
+              <div>Current Habit: {behaviorState.currentHabit?.name || 'None'}</div>
+              <div>Time: {Math.floor(behaviorState.timeOfDay)}:{Math.floor((behaviorState.timeOfDay % 1) * 60).toString().padStart(2, '0')}</div>
             </div>
           </div>
 
           <div className="bg-gray-800 p-4 rounded-lg">
-            <h3 className="text-lg font-bold mb-2 text-white">Habit Strengths</h3>
+            <h3 className="text-lg font-semibold mb-2 text-yellow-300">Habit Strengths</h3>
             <div className="space-y-2">
               {habits.map(habit => (
                 <div key={habit.id} className="flex items-center justify-between">
